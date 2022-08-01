@@ -1,39 +1,45 @@
 import React, {Component} from "react";
 import {variables} from './Variables.js';
+import {BalanceSheetItem} from './BalanceSheetItem';
 
 export class BalanceSheet extends Component{
     constructor(props){
         super(props);
+
         this.state = {
-            consumedJson: null
+            // json contains structure for the financial statement
+            finStatementTree: {},
+            itemsToDisplay: ["Assets", "LiabilitiesAndStockholdersEquity"]
         }
     }
 
-    // https://www.pluralsight.com/guides/fetch-data-from-a-json-file-in-a-react-app
-    fetchBalanceSheetData(){
-        fetch(variables.API_URL)
+    fetchStatementStructure(){
+        fetch(variables.BALANCE_SHEET_STRUCT_API_URL)
             .then(response => {
                 return response.json();
             })
             .then(myJson => {
-                console.log("*** myJson *** : " + myJson);
-                this.setState({consumedJson:myJson});
+                this.setState({finStatementTree:myJson});
             });
     }
 
+    findRootNodeKey(finStatementTreeJson, nodeName){
+        for (let key in finStatementTreeJson) {
+            if (key.includes('_' + nodeName + '_')){
+                return key;
+            }
+        }
+    }
+
     componentDidMount(){
-        this.fetchBalanceSheetData();
+        this.fetchStatementStructure();
     }
 
     render(){
-        console.log("render ===  ==== " + JSON.stringify(this.state.consumedJson));
-        
         return (
-            <div>
-                qwdqwd
-                {JSON.stringify(this.state.consumedJson)}
-                {/* {this.state.departments} */}
-            </div>
+            this.state.itemsToDisplay.map((item) =>
+                <BalanceSheetItem itemName={item} finStatementTree={this.state.finStatementTree} />
+            )
         )
     }
 }
