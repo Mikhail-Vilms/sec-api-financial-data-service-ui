@@ -9,7 +9,8 @@ export class BalanceSheet extends Component{
         this.state = {
             // json contains structure for the financial statement
             finStatementTree: {},
-            itemsToDisplay: ["Assets", "LiabilitiesAndStockholdersEquity"]
+            nodesToDisplay: ["Assets", "LiabilitiesAndStockholdersEquity"], // "root nodes" of the page
+            nodeKeys: [],
         }
     }
 
@@ -18,28 +19,36 @@ export class BalanceSheet extends Component{
             .then(response => {
                 return response.json();
             })
-            .then(myJson => {
-                this.setState({finStatementTree:myJson});
-            });
+            .then(finStatementTree => {
+                this.setState({finStatementTree:finStatementTree});
+                return finStatementTree;
+            }).then(finStatementTree => {
+                this.setState(
+                    {
+                        nodeKeys : this.state.nodesToDisplay
+                            .map((nodeName) => this.findNodeKey(nodeName, finStatementTree))
+                    });
+            })
+    }
+    
+    componentDidMount(){
+        this.fetchStatementStructure();
     }
 
-    findRootNodeKey(finStatementTreeJson, nodeName){
-        for (let key in finStatementTreeJson) {
+    findNodeKey(nodeName, finStatementTree){
+        for (let key in finStatementTree.financialPositions) {
             if (key.includes('_' + nodeName + '_')){
                 return key;
             }
         }
     }
 
-    componentDidMount(){
-        this.fetchStatementStructure();
-    }
-
     render(){
         return (
-            this.state.itemsToDisplay.map((item) =>
-                <BalanceSheetItem itemName={item} finStatementTree={this.state.finStatementTree} />
-            )
+            this.state.finStatementTree ? 
+                this.state.nodeKeys.map((nodeKey) => 
+                    <BalanceSheetItem currentNodeId={nodeKey} finStatementTree={this.state.finStatementTree} />)
+                : "NOT LOADED YET"
         )
     }
 }

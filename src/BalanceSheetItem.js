@@ -3,20 +3,22 @@ import {Component} from "react";
 export class BalanceSheetItem extends Component{
     constructor(props){
         super(props);
-
         this.state = {
+            CurrentNode : props.finStatementTree.financialPositions[props.currentNodeId],
             IsDescriptionDisplayed : false,
             FinData : {},
-            Facts: []
+            Facts: [],
+            Children: props.finStatementTree.financialPositions[props.currentNodeId].children
         }
     }
 
     componentDidMount(){
-        this.fetchFinData(this.props.itemName);
+        console.log(" ~~~~ props.currentNodeId: " + this.props.currentNodeId);
+        this.fetchFinData(this.state.CurrentNode);
     }
 
-    fetchFinData(finNodeTitle){ 
-        let targetUrl = "https://lyropdpvy6.execute-api.us-west-2.amazonaws.com/dev/financial-data/CIK0000050863/BalanceSheet/" + finNodeTitle;
+    fetchFinData(currentNode){ 
+        let targetUrl = "https://lyropdpvy6.execute-api.us-west-2.amazonaws.com/dev/financial-data/CIK0000050863/BalanceSheet/" + currentNode.name;
         fetch(targetUrl)
             .then(response => {
                 return response.json();
@@ -61,7 +63,7 @@ export class BalanceSheetItem extends Component{
             <div class = "container">
                 <div class = "row">
                     <h5>
-                        {this.state.FinData.displayName} <button type="button" class="btn" onClick={() => this.switchDescriptionState()}><i class="bi bi-info-circle" data-toggle="tooltip" data-placement="top" title="Click to view description" ></i></button>
+                    <button type="button" class="btn" onClick={() => this.switchDescriptionState()}><i class="bi bi-info-circle" data-toggle="tooltip" data-placement="top" title="Click to view description" ></i></button> {this.state.FinData.displayName}
                     </h5>
                 </div>
                 {this.renderDescriptionRow()}
@@ -78,6 +80,9 @@ export class BalanceSheetItem extends Component{
                             </tr>
                         </tbody>
                     </table>
+                </div>
+                <div class = "row">
+                    {this.state.Children}
                 </div>
             </div>
         )
