@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import {variables} from './Variables.js';
 import {BalanceSheetItem} from './BalanceSheetItem';
+import {CompanyPage} from './CompanyPage';
 
 export class BalanceSheet extends Component{
     constructor(props){
@@ -37,18 +38,31 @@ export class BalanceSheet extends Component{
 
     findNodeKey(nodeName, finStatementTree){
         for (let key in finStatementTree.financialPositions) {
-            if (key.includes('_' + nodeName + '_')){
+            if (key === nodeName){
                 return key;
             }
         }
     }
 
     render(){
+        if(!this.state.finStatementTree){
+            return (
+                <div>
+                    Loading...
+                </div>
+            )
+        }
+
         return (
-            this.state.finStatementTree ? 
-                this.state.nodeKeys.map((nodeKey) => 
-                    <BalanceSheetItem currentNodeId={nodeKey} finStatementTree={this.state.finStatementTree} />)
-                : "NOT LOADED YET"
+            <div>
+                <CompanyPage/>
+                <div className="container">
+                {this.state.finStatementTree ? 
+                    this.state.nodeKeys.map((nodeKey) => 
+                        <BalanceSheetItem currentNodeId={nodeKey} finStatementTree={this.state.finStatementTree} />)
+                    : "NOT LOADED YET"}
+                </div>
+            </div>
         )
     }
 }

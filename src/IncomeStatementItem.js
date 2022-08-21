@@ -1,12 +1,19 @@
 import {Component} from "react";
 import './TableStyle.css';
 
-export class BalanceSheetItem extends Component{
+export class IncomeStatementItem extends Component{
     constructor(props){
         super(props);
+
+        let locationPathname = window.location.pathname;
+        let pathArr = locationPathname.split("/");
+        const cikNumber = pathArr[2];
+
         let currentNode = props.finStatementTree.financialPositions[props.currentNodeId];
 
+
         this.state = {
+            cikNumber: cikNumber,
             CurrentNode : currentNode,
             IsDescriptionDisplayed : false,
             FinData : {},
@@ -25,7 +32,8 @@ export class BalanceSheetItem extends Component{
     }
 
     fetchFinData(currentNode){ 
-        let targetUrl = "https://lyropdpvy6.execute-api.us-west-2.amazonaws.com/dev/financial-data/CIK0000050863/BalanceSheet/" + currentNode.name;
+        let targetUrl = "https://lyropdpvy6.execute-api.us-west-2.amazonaws.com/dev/financial-data/" + this.state.cikNumber + "/IncomeStatement/" + currentNode.name;
+        console.log("~~~~ targetUrl: " + targetUrl);
         fetch(targetUrl)
             .then(response => {
                 return response.json();
@@ -37,6 +45,7 @@ export class BalanceSheetItem extends Component{
     }
 
     renderFinancialFact(){
+        console.log("~~~~ this.state.Facts: " + this.state.Facts);
         return this.state.Facts.map((fact) =>
             <div class="col-xl-1 col-lg-1 col-md-2 col-sm-2 col-3">
                 <div class="row text-secondary">
@@ -102,7 +111,7 @@ export class BalanceSheetItem extends Component{
 
         return (
             this.state.Children.map((child) => 
-                <BalanceSheetItem currentNodeId={child} finStatementTree={this.props.finStatementTree} />)
+                <IncomeStatementItem currentNodeId={child} finStatementTree={this.props.finStatementTree} />)
         )
     }
 

@@ -1,0 +1,43 @@
+/* body{
+    color: #606c76;
+    font-family: 'Roboto', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+    font-size: 1.0em;
+    font-weight: 200;
+    letter-spacing: .01em;
+    line-height: 1.2;
+  } */
+
+  /* .react-table {
+    position: center;
+  }
+
+  .react-table__scroll-container{
+    width: 100%;
+    overflow-x: scroll;
+  }
+
+  .react-table__fixed-col:before {
+    content: attr(data-val);
+    display: block;
+    position: absolute;
+    top: auto;
+    left: 0;
+    background: #fff;
+    border-right: 0.1rem solid #e1e1e1;
+    border-bottom: 0.1rem solid #e1e1e1;
+    padding: 1.2rem 1.5rem;
+    text-align: left;
+    margin-top: -1.2rem;
+    width: 75px;
+  }
+
+  .react-table__fixed-col {
+    width: 75px;
+  }
+
+  td,
+  th {
+    border-bottom: 0.1rem solid #f30505;
+    padding: 1.0rem 1.0rem;
+    text-align: center;
+  } */
