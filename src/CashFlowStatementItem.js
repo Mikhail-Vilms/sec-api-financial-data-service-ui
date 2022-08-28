@@ -1,38 +1,54 @@
 import {Component} from "react";
-import './TableStyle.css';
 
-export class BalanceSheetItem extends Component{
+
+export class CashFlowStatementItem extends Component{
     constructor(props){
         super(props);
-        let currentNode = props.finStatementTree.financialPositions[props.currentNodeId];
+
+        let locationPathname = window.location.pathname;
+        let pathArr = locationPathname.split("/");
+        const cikNumber = pathArr[2];
+
+        let currentNode = this.props.finStatementTree.financialPositions[this.props.currentNodeId];
 
         this.state = {
-            CurrentNode : currentNode,
-            IsDescriptionDisplayed : false,
-            FinData : {},
-            Facts: [],
+            cikNumber: cikNumber,
+            
+            FinData : null,
+            Facts: null,
+            
             Children: currentNode?.children,
+
+            IsDescriptionDisplayed : false,
             IsDropdownButtonVisible: (currentNode?.children != null),
             AreChildrenVisible: false
         }
     }
 
     componentDidMount(){
-        if (this.state.FinData === {}){
-            return;
-        }
-        this.fetchFinData(this.state.CurrentNode);
+        this.fetchFinData();
     }
 
-    fetchFinData(currentNode){ 
-        let targetUrl = "https://lyropdpvy6.execute-api.us-west-2.amazonaws.com/dev/financial-data/CIK0000050863/BalanceSheet/" + currentNode.name;
+    fetchFinData(){
+        let targetUrl = "https://lyropdpvy6.execute-api.us-west-2.amazonaws.com/dev/financial-data/" + this.state.cikNumber + "/CashFlowStatement/" + this.props.currentNodeId;
         fetch(targetUrl)
             .then(response => {
                 return response.json();
-            })            
+            })
             .then(myJson => {
                 this.setState({FinData:myJson});
-                this.setState({Facts:myJson.facts});
+                return myJson.facts;
+            })
+            .then(jsonFacts => {
+                let facts = jsonFacts;
+                while (facts.length < 12){
+                    facts.unshift({
+                        displayTimeFrame : "N/A",
+                        displayValue : "N/A",
+                    });
+                }
+
+                this.setState({Facts:facts});
             });
     }
 
@@ -50,25 +66,25 @@ export class BalanceSheetItem extends Component{
             </div>
         );
     }
-    
+
     switchDescriptionState(){
         this.setState({IsDescriptionDisplayed: !this.state.IsDescriptionDisplayed});
     }
 
     renderDescriptionRow(){
         if (this.state.IsDescriptionDisplayed === false){
-            return (                
+            return (
                 ""
             )
         }
         return (
-            <div class="text-center text-secondary"><em><small>{this.state.FinData.description}</small></em></div>  
+            <div class="text-center text-secondary"><em><small>{this.state.FinData.description}</small></em></div>
         )
     }
 
     renderDropdownButton(){
         if (this.state.IsDropdownButtonVisible === false){
-            return (                
+            return (
                 ""
             )
         }
@@ -80,7 +96,7 @@ export class BalanceSheetItem extends Component{
             )
         }
         else {
-            return (                
+            return (
                 <button type="button" class="btn" onClick={() => this.switchChildrenState()}>
                     <i class="bi bi-caret-right"></i>
                 </button>
@@ -99,14 +115,22 @@ export class BalanceSheetItem extends Component{
         if (!this.state.Children){
             return ("")
         }
-
+        
         return (
-            this.state.Children.map((child) => 
-                <BalanceSheetItem currentNodeId={child} finStatementTree={this.props.finStatementTree} />)
+            this.state.Children.map((child) =>
+                <CashFlowStatementItem currentNodeId={child} finStatementTree={this.props.finStatementTree} />)
         )
     }
 
     render(){
+        if (!this.state.FinData || !this.state.Facts){
+            return (        
+                <div>
+                    Loading financial data...
+                </div>
+             )
+        }
+
         return (
             <div class = "container border-bottom">
                     <div class = "row">
@@ -117,10 +141,10 @@ export class BalanceSheetItem extends Component{
                                 <i class="bi bi-info-circle" data-toggle="tooltip" data-placement="top" title="Click to view description" ></i>
                             </button>
                             <button type="button" class="btn">
-                                <i class="bi bi-plus-slash-minus" data-toggle="tooltip" data-placement="top" title="Click to view description" ></i>
+                                <i class="bi bi-plus-slash-minus" data-toggle="tooltip" data-placement="top" title="Click to view description" disabled></i>
                             </button>
                             <button type="button" class="btn">
-                                <i class="bi bi-bar-chart-line" data-toggle="tooltip" data-placement="top" title="Click to view description" ></i>
+                                <i class="bi bi-bar-chart-line" data-toggle="tooltip" data-placement="top" title="Click to view description" disabled></i>
                             </button>
                         </div>
                     </div>
@@ -133,7 +157,6 @@ export class BalanceSheetItem extends Component{
                     <div class = "row d-flex justify-content-center">
                         {this.renderChildren()}
                     </div>
-
                 </div>
         )
     }

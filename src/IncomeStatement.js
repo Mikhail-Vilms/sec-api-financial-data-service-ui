@@ -1,7 +1,6 @@
 import React, {Component} from "react";
 import {variables} from './Variables.js';
 import {CompanyPage} from './CompanyPage';
-import {BalanceSheetItem} from './BalanceSheetItem';
 import {IncomeStatementItem} from './IncomeStatementItem';
 
 export class IncomeStatement extends Component{

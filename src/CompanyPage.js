@@ -26,7 +26,6 @@ export class CompanyPage extends Component{
                 return response.json();
             })            
             .then(myJson => {
-                console.log("~~~myJson: " + myJson);
                 this.setState({companyInfo:myJson});
             });
     }
@@ -68,6 +67,18 @@ export class CompanyPage extends Component{
                             Cash Flow Statement
                         </NavLink>
                     </div>
+                    {/* <div class="col-sm d-flex justify-content-center">                        
+                        <div class="dropdown show">
+                            <a class="btn btn-outline-dark btn-sm dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Dropdown link
+                            </a>
+
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                <a class="dropdown-item" href="#">Annual</a>
+                                <a class="dropdown-item" href="#" disabled>Quarterly</a>
+                            </div>
+                        </div>
+                    </div> */}
                 </div>
             </div>
         );
